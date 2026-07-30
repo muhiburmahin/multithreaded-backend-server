@@ -67,7 +67,7 @@ void Server::run() {
         }
 
         std::string ip = inet_ntoa(clientAddr.sin_addr);
-        handleConnection(clientFd, ip);
+        pool.enqueue([this, clientFd, ip] { handleConnection(clientFd, ip); });
     }
 
     if (listenFd >= 0) {

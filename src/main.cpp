@@ -10,6 +10,7 @@
 #include <iomanip>
 #include <sstream>
 #include <string>
+#include <thread>
 
 namespace {
 
@@ -69,7 +70,11 @@ int main() {
         return HttpResponse::json("{\"echo\":\"" + escapeJson(req.body) + "\"}");
     });
 
-    ThreadPool pool(1);
+    size_t poolSize = std::thread::hardware_concurrency();
+    if (poolSize == 0) {
+        poolSize = 4;
+    }
+    ThreadPool pool(poolSize);
     RateLimiter limiter(1000, 60);
     Server server(8080, pool, limiter, router);
     server.run();
