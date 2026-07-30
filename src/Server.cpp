@@ -84,7 +84,14 @@ void Server::stop() {
     }
 }
 
-void Server::handleConnection(int clientFd, const std::string& /*ip*/) {
+void Server::handleConnection(int clientFd, const std::string& ip) {
+    if (!limiter.allow(ip)) {
+        const std::string response = HttpResponse::tooManyRequests();
+        send(clientFd, response.data(), response.size(), 0);
+        close(clientFd);
+        return;
+    }
+
     std::vector<char> buf(8192);
     const ssize_t n = recv(clientFd, buf.data(), buf.size() - 1, 0);
     if (n <= 0) {

@@ -75,7 +75,8 @@ int main() {
         poolSize = 4;
     }
     ThreadPool pool(poolSize);
-    RateLimiter limiter(1000, 60);
+    // 10 req / 60s window — low enough to demo 429s with the Phase 5 bash loop
+    RateLimiter limiter(10, 60);
     Server server(8080, pool, limiter, router);
     server.run();
     return 0;
