@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/mnt/e/Multithread Backend Server/build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
