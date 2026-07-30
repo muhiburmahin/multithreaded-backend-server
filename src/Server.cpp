@@ -1,5 +1,8 @@
 #include "Server.hpp"
 
+#include "HttpRequest.hpp"
+#include "HttpResponse.hpp"
+
 #include <arpa/inet.h>
 #include <cerrno>
 #include <csignal>
@@ -8,9 +11,10 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <vector>
 
-Server::Server(int port, ThreadPool& pool, RateLimiter& limiter)
-    : port(port), pool(pool), limiter(limiter) {}
+Server::Server(int port, ThreadPool& pool, RateLimiter& limiter, Router& router)
+    : port(port), pool(pool), limiter(limiter), router(router) {}
 
 void Server::run() {
     signal(SIGPIPE, SIG_IGN);
@@ -63,7 +67,6 @@ void Server::run() {
         }
 
         std::string ip = inet_ntoa(clientAddr.sin_addr);
-        // Phase 1: handle inline (thread pool comes in Phase 3)
         handleConnection(clientFd, ip);
     }
 
@@ -82,17 +85,22 @@ void Server::stop() {
 }
 
 void Server::handleConnection(int clientFd, const std::string& /*ip*/) {
-    char buf[1024];
-    recv(clientFd, buf, sizeof(buf) - 1, 0);
+    std::vector<char> buf(8192);
+    const ssize_t n = recv(clientFd, buf.data(), buf.size() - 1, 0);
+    if (n <= 0) {
+        close(clientFd);
+        return;
+    }
+    buf[static_cast<std::size_t>(n)] = '\0';
 
-    const char* reply =
-        "HTTP/1.1 200 OK\r\n"
-        "Content-Type: text/plain\r\n"
-        "Content-Length: 2\r\n"
-        "Connection: close\r\n"
-        "\r\n"
-        "ok";
+    const HttpRequest req = HttpRequest::parse(std::string(buf.data(), static_cast<std::size_t>(n)));
+    std::string response;
+    if (req.method.empty() || req.path.empty()) {
+        response = HttpResponse::badRequest();
+    } else {
+        response = router.dispatch(req);
+    }
 
-    send(clientFd, reply, std::strlen(reply), 0);
+    send(clientFd, response.data(), response.size(), 0);
     close(clientFd);
 }

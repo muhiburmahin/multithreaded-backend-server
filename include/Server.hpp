@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RateLimiter.hpp"
+#include "Router.hpp"
 #include "ThreadPool.hpp"
 
 #include <atomic>
@@ -8,7 +9,7 @@
 
 class Server {
 public:
-    Server(int port, ThreadPool& pool, RateLimiter& limiter);
+    Server(int port, ThreadPool& pool, RateLimiter& limiter, Router& router);
     void run();
     void stop();
 
@@ -18,5 +19,6 @@ private:
     std::atomic<bool> running{true};
     ThreadPool& pool;
     RateLimiter& limiter;
+    Router& router;
     void handleConnection(int clientFd, const std::string& ip);
 };
