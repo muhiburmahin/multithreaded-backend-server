@@ -70,13 +70,14 @@ int main() {
         return HttpResponse::json("{\"echo\":\"" + escapeJson(req.body) + "\"}");
     });
 
-    size_t poolSize = std::thread::hardware_concurrency();
-    if (poolSize == 0) {
-        poolSize = 4;
-    }
-    ThreadPool pool(poolSize);
-    // 10 req / 60s window — low enough to demo 429s with the Phase 5 bash loop
-    RateLimiter limiter(10, 60);
+    // Change THREAD_POOL_SIZE between load-test runs (Phase 6: 4 then 8).
+    constexpr size_t THREAD_POOL_SIZE = 8;
+    // High for load testing; set to 10 for Phase 5 rate-limit demo.
+    constexpr int RATE_LIMIT_MAX = 10000000;
+    constexpr int RATE_LIMIT_WINDOW_SEC = 60;
+
+    ThreadPool pool(THREAD_POOL_SIZE);
+    RateLimiter limiter(RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_SEC);
     Server server(8080, pool, limiter, router);
     server.run();
     return 0;

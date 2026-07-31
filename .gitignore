@@ -1,0 +1,7 @@
+build/
+.tools/
+*.o
+*.a
+*.out
+.vscode/
+.idea/
