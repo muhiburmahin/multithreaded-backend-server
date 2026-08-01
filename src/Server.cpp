@@ -13,8 +13,30 @@
 #include <unistd.h>
 #include <vector>
 
-Server::Server(int port, ThreadPool& pool, RateLimiter& limiter, Router& router)
-    : port(port), pool(pool), limiter(limiter), router(router) {}
+namespace {
+
+int statusFromResponse(const std::string& response) {
+    // "HTTP/1.1 200 OK\r\n..."
+    const auto sp1 = response.find(' ');
+    if (sp1 == std::string::npos) {
+        return 0;
+    }
+    const auto sp2 = response.find(' ', sp1 + 1);
+    if (sp2 == std::string::npos) {
+        return 0;
+    }
+    try {
+        return std::stoi(response.substr(sp1 + 1, sp2 - sp1 - 1));
+    } catch (...) {
+        return 0;
+    }
+}
+
+}  // namespace
+
+Server::Server(int port, ThreadPool& pool, RateLimiter& limiter, Router& router,
+               Logger& logger)
+    : port(port), pool(pool), limiter(limiter), router(router), logger(logger) {}
 
 void Server::run() {
     signal(SIGPIPE, SIG_IGN);
@@ -59,7 +81,10 @@ void Server::run() {
         socklen_t len = sizeof(clientAddr);
         int clientFd = accept(listenFd, reinterpret_cast<sockaddr*>(&clientAddr), &len);
         if (clientFd < 0) {
-            if (!running || errno == EINTR) {
+            if (!running) {
+                break;
+            }
+            if (errno == EINTR) {
                 continue;
             }
             perror("accept");
@@ -74,19 +99,22 @@ void Server::run() {
         close(listenFd);
         listenFd = -1;
     }
+    std::cout << "Server stopped." << std::endl;
 }
 
 void Server::stop() {
     running = false;
     if (listenFd >= 0) {
-        close(listenFd);
+        const int fd = listenFd;
         listenFd = -1;
+        close(fd);
     }
 }
 
 void Server::handleConnection(int clientFd, const std::string& ip) {
     if (!limiter.allow(ip)) {
         const std::string response = HttpResponse::tooManyRequests();
+        logger.log(ip, "-", "-", 429);
         send(clientFd, response.data(), response.size(), 0);
         close(clientFd);
         return;
@@ -107,6 +135,10 @@ void Server::handleConnection(int clientFd, const std::string& ip) {
     } else {
         response = router.dispatch(req);
     }
+
+    const int status = statusFromResponse(response);
+    logger.log(ip, req.method.empty() ? "-" : req.method,
+               req.path.empty() ? "-" : req.path, status);
 
     send(clientFd, response.data(), response.size(), 0);
     close(clientFd);

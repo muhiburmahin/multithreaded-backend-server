@@ -119,8 +119,8 @@ CMakeFiles/server.dir/src/main.cpp.o: \
  /usr/include/c++/15/bits/uses_allocator.h \
  /usr/include/c++/15/bits/uses_allocator_args.h /usr/include/c++/15/tuple \
  /mnt/e/Multithread\ Backend\ Server/include/HttpResponse.hpp \
- /mnt/e/Multithread\ Backend\ Server/include/RateLimiter.hpp \
- /usr/include/c++/15/chrono /usr/include/c++/15/bits/chrono.h \
+ /mnt/e/Multithread\ Backend\ Server/include/Logger.hpp \
+ /usr/include/c++/15/mutex /usr/include/c++/15/bits/chrono.h \
  /usr/include/c++/15/ratio /usr/include/c++/15/cstdint \
  /usr/lib/gcc/x86_64-linux-gnu/15/include/stdint.h /usr/include/stdint.h \
  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
@@ -130,7 +130,7 @@ CMakeFiles/server.dir/src/main.cpp.o: \
  /usr/include/x86_64-linux-gnu/bits/timex.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_tm.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_itimerspec.h \
- /usr/include/c++/15/bits/parse_numbers.h /usr/include/c++/15/mutex \
+ /usr/include/c++/15/bits/parse_numbers.h \
  /usr/include/c++/15/bits/std_mutex.h \
  /usr/include/x86_64-linux-gnu/c++/15/bits/gthr.h \
  /usr/include/x86_64-linux-gnu/c++/15/bits/gthr-default.h \
@@ -155,7 +155,8 @@ CMakeFiles/server.dir/src/main.cpp.o: \
  /usr/include/c++/15/ext/atomicity.h \
  /usr/include/x86_64-linux-gnu/c++/15/bits/atomic_word.h \
  /usr/include/x86_64-linux-gnu/sys/single_threaded.h \
- /usr/include/c++/15/unordered_map \
+ /mnt/e/Multithread\ Backend\ Server/include/RateLimiter.hpp \
+ /usr/include/c++/15/chrono /usr/include/c++/15/unordered_map \
  /usr/include/c++/15/bits/unordered_map.h \
  /usr/include/c++/15/bits/hashtable.h \
  /usr/include/c++/15/bits/hashtable_policy.h \
@@ -188,8 +189,37 @@ CMakeFiles/server.dir/src/main.cpp.o: \
  /usr/include/c++/15/bits/deque.tcc /usr/include/c++/15/bits/stl_heap.h \
  /usr/include/c++/15/bits/stl_queue.h /usr/include/c++/15/thread \
  /usr/include/c++/15/bits/std_thread.h \
- /usr/include/c++/15/bits/this_thread_sleep.h /usr/include/c++/15/iomanip \
- /usr/include/c++/15/bits/ios_base.h \
+ /usr/include/c++/15/bits/this_thread_sleep.h /usr/include/c++/15/csignal \
+ /usr/include/signal.h \
+ /usr/include/x86_64-linux-gnu/bits/signum-generic.h \
+ /usr/include/x86_64-linux-gnu/bits/signum-arch.h \
+ /usr/include/x86_64-linux-gnu/bits/types/sig_atomic_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/siginfo_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/__sigval_t.h \
+ /usr/include/x86_64-linux-gnu/bits/siginfo-arch.h \
+ /usr/include/x86_64-linux-gnu/bits/siginfo-consts.h \
+ /usr/include/x86_64-linux-gnu/bits/siginfo-consts-arch.h \
+ /usr/include/x86_64-linux-gnu/bits/types/sigval_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/sigevent_t.h \
+ /usr/include/x86_64-linux-gnu/bits/sigevent-consts.h \
+ /usr/include/x86_64-linux-gnu/bits/sigaction.h \
+ /usr/include/x86_64-linux-gnu/bits/sigcontext.h \
+ /usr/include/x86_64-linux-gnu/bits/types/stack_t.h \
+ /usr/include/x86_64-linux-gnu/sys/ucontext.h \
+ /usr/include/x86_64-linux-gnu/bits/sigstack.h \
+ /usr/include/x86_64-linux-gnu/bits/sigstksz.h /usr/include/unistd.h \
+ /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
+ /usr/include/x86_64-linux-gnu/bits/environments.h \
+ /usr/include/x86_64-linux-gnu/bits/confname.h \
+ /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
+ /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
+ /usr/include/x86_64-linux-gnu/bits/unistd_ext.h \
+ /usr/include/linux/close_range.h \
+ /usr/include/x86_64-linux-gnu/bits/ss_flags.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_sigstack.h \
+ /usr/include/x86_64-linux-gnu/bits/sigthread.h \
+ /usr/include/x86_64-linux-gnu/bits/signal_ext.h \
+ /usr/include/c++/15/iomanip /usr/include/c++/15/bits/ios_base.h \
  /usr/include/c++/15/bits/locale_classes.h \
  /usr/include/c++/15/bits/locale_classes.tcc \
  /usr/include/c++/15/system_error /usr/include/c++/15/stdexcept \
@@ -213,4 +243,4 @@ CMakeFiles/server.dir/src/main.cpp.o: \
  /usr/include/c++/15/bits/basic_ios.tcc /usr/include/c++/15/ostream \
  /usr/include/c++/15/bits/ostream.h /usr/include/c++/15/bits/ostream.tcc \
  /usr/include/c++/15/bits/istream.tcc \
- /usr/include/c++/15/bits/sstream.tcc
+ /usr/include/c++/15/bits/sstream.tcc /usr/include/c++/15/iostream
