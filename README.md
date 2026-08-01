@@ -60,6 +60,10 @@ curl -v http://127.0.0.1:8080/health
 curl -v http://127.0.0.1:8080/time
 curl -v -X POST -d "hello" http://127.0.0.1:8080/echo
 curl -v http://127.0.0.1:8080/xyz          # 404
+
+# Stretch: static files from public/
+curl -v http://127.0.0.1:8080/files/hello.txt
+curl -v http://127.0.0.1:8080/files/../secret   # rejected (404)
 ```
 
 Expected:

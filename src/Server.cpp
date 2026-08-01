@@ -7,13 +7,59 @@
 #include <cerrno>
 #include <csignal>
 #include <cstring>
+#include <fstream>
 #include <iostream>
 #include <netinet/in.h>
+#include <sstream>
 #include <sys/socket.h>
 #include <unistd.h>
 #include <vector>
 
 namespace {
+
+std::string guessContentType(const std::string& name) {
+    const auto dot = name.rfind('.');
+    if (dot == std::string::npos) {
+        return "application/octet-stream";
+    }
+    const std::string ext = name.substr(dot);
+    if (ext == ".html" || ext == ".htm") {
+        return "text/html";
+    }
+    if (ext == ".txt") {
+        return "text/plain";
+    }
+    if (ext == ".css") {
+        return "text/css";
+    }
+    if (ext == ".js") {
+        return "application/javascript";
+    }
+    if (ext == ".json") {
+        return "application/json";
+    }
+    return "application/octet-stream";
+}
+
+// GET /files/<name> from ../public (when run from build/) or ./public
+std::string servePublicFile(const std::string& name) {
+    if (name.empty() || name.find("..") != std::string::npos ||
+        name.find('/') != std::string::npos || name.find('\\') != std::string::npos) {
+        return HttpResponse::notFound();
+    }
+
+    std::ifstream in("../public/" + name, std::ios::binary);
+    if (!in) {
+        in.open("public/" + name, std::ios::binary);
+    }
+    if (!in) {
+        return HttpResponse::notFound();
+    }
+
+    std::ostringstream ss;
+    ss << in.rdbuf();
+    return HttpResponse::ok(ss.str(), guessContentType(name));
+}
 
 int statusFromResponse(const std::string& response) {
     // "HTTP/1.1 200 OK\r\n..."
@@ -132,6 +178,8 @@ void Server::handleConnection(int clientFd, const std::string& ip) {
     std::string response;
     if (req.method.empty() || req.path.empty()) {
         response = HttpResponse::badRequest();
+    } else if (req.method == "GET" && req.path.rfind("/files/", 0) == 0) {
+        response = servePublicFile(req.path.substr(7));
     } else {
         response = router.dispatch(req);
     }
